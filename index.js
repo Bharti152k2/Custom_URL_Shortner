@@ -1,6 +1,7 @@
 const express = require("express");
 const env = require("dotenv").config();
 const connectDB = require("./database/connectDB");
+const setupSwagger = require("./swagger");
 let app = express();
 app.use(express.json());
 app.get("/", (req, res) => {
@@ -14,6 +15,7 @@ let server = async () => {
     app.listen(PORT, () => {
       console.log(`The application is running on port ${PORT}`);
     });
+    setupSwagger(app);
   } catch (error) {
     console.log(error);
   }
