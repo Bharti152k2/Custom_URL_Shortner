@@ -1,16 +1,18 @@
 const express = require("express");
+const env = require("dotenv").config();
 const connectDB = require("./database/connectDB");
 let app = express();
 app.use(express.json());
-app.use("/", () => {
-  console.log("Server is running");
+app.get("/", (req, res) => {
+  res.send("Backend is running successfully!");
 });
+const PORT = process.env.PORT;
 let server = async () => {
   try {
     await connectDB();
     console.log("MongoDB Atlas connected successfully");
-    app.listen(5001, () => {
-      console.log("The application is running on port 5001");
+    app.listen(PORT, () => {
+      console.log(`The application is running on port ${PORT}`);
     });
   } catch (error) {
     console.log(error);
