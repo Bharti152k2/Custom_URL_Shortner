@@ -1,12 +1,14 @@
 const express = require("express");
-const env = require("dotenv").config();
+require("dotenv").config();
 const connectDB = require("./database/connectDB");
 const setupSwagger = require("./swagger");
+const routes = require("./routes/login.routes.js");
 let app = express();
 app.use(express.json());
 app.get("/", (req, res) => {
   res.send("Backend is running successfully!");
 });
+app.use("/api", routes);
 const PORT = process.env.PORT;
 let server = async () => {
   try {
