@@ -1,8 +1,22 @@
 const express = require("express");
-const { register, login } = require("../controller/login.contoller");
+const passport = require("passport");
+const {
+  googleAuth,
+  googleAuthCallback,
+  getProfile,
+} = require("../controller/login.contoller");
 
-let router = express.Router();
-router.post("/signup", register);
-router.get("/signin", login);
+const router = express.Router();
+
+// Google OAuth Routes
+router.get("/google", googleAuth);
+router.get(
+  "/google/callback",
+  passport.authenticate("google", { session: false }),
+  googleAuthCallback
+);
+
+// Protected Route
+router.get("/profile", getProfile);
 
 module.exports = router;
