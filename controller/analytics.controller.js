@@ -12,7 +12,7 @@ const getShortUrlAnalytics = async (req, res) => {
     const totalClicks = url.clicks.length;
     const uniqueUsers = new Set(url.clicks.map((click) => click.ip)).size;
 
-    // 📌 1. Clicks by Date (Last 7 Days)
+    // 1. Clicks by Date (Last 7 Days)
     const last7Days = Array.from({ length: 7 }, (_, i) => {
       const date = moment().subtract(i, "days").format("YYYY-MM-DD");
       return { date, clickCount: 0 };
@@ -26,7 +26,7 @@ const getShortUrlAnalytics = async (req, res) => {
       }
     });
 
-    // 📌 2. OS Type Breakdown
+    // 2. OS Type Breakdown
     const osStats = {};
     url.clicks.forEach((click) => {
       const os = click.os || "Unknown";
@@ -43,7 +43,7 @@ const getShortUrlAnalytics = async (req, res) => {
       uniqueUsers: data.uniqueUsers.size,
     }));
 
-    // 📌 3. Device Type Breakdown
+    // 3. Device Type Breakdown
     const deviceStats = {};
     url.clicks.forEach((click) => {
       const device = click.device || "Unknown";
@@ -61,8 +61,6 @@ const getShortUrlAnalytics = async (req, res) => {
         uniqueUsers: data.uniqueUsers.size,
       })
     );
-
-    // ✅ Response
     res.json({
       totalClicks,
       uniqueUsers,
@@ -77,13 +75,11 @@ const getShortUrlAnalytics = async (req, res) => {
 
 const getTopicBasedAnalytics = async (req, res) => {
   try {
-
     // Fetch all URLs under the given topic and created by the logged-in user
     const urls = await Url.find({
       topic: req.params.topic,
       createdBy: req.user.id,
     });
-
 
     if (urls.length === 0) {
       return res.json({
@@ -94,11 +90,11 @@ const getTopicBasedAnalytics = async (req, res) => {
       });
     }
 
-    // 📌 Total Clicks & Unique Users
+    // Total Clicks & Unique Users
     let totalClicks = 0;
     const uniqueUsersSet = new Set();
 
-    // 📌 Clicks by Date (Last 7 Days)
+    // Clicks by Date (Last 7 Days)
     const last7Days = Array.from({ length: 7 }, (_, i) => {
       const date = moment().subtract(i, "days").format("YYYY-MM-DD");
       return { date, clickCount: 0 };
@@ -118,14 +114,13 @@ const getTopicBasedAnalytics = async (req, res) => {
       });
     });
 
-    // 📌 URLs Breakdown
+    // URLs Breakdown
     const urlsData = urls.map((url) => ({
       shortUrl: url.shortUrl,
       totalClicks: url.clicks.length,
       uniqueUsers: new Set(url.clicks.map((click) => click.ip)).size,
     }));
 
-    // ✅ Send response
     res.json({
       totalClicks,
       uniqueUsers: uniqueUsersSet.size,
@@ -136,5 +131,19 @@ const getTopicBasedAnalytics = async (req, res) => {
     res.status(500).json({ message: err.message || "Internal Server Error" });
   }
 };
+const getOverallAnalytics = async (req, res) => {
+  console.log("knvskvsk");
+  try {
+    const urls = await Url.find({ createdBy: req.user.id });
+    const totalUrls = urls.length;
+    const totalClicks = urls.reduce((sum, url) => sum + url.clicks.length, 0);
+    const uniqueUsers = new Set(
+      urls.flatMap((url) => url.clicks.map((click) => click.ip))
+    ).size;
+    res.json({ totalUrls, totalClicks, uniqueUsers });
+  } catch (err) {
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
 
-export { getShortUrlAnalytics, getTopicBasedAnalytics };
+export { getShortUrlAnalytics, getTopicBasedAnalytics, getOverallAnalytics };

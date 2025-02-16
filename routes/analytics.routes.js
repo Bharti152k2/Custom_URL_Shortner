@@ -1,11 +1,14 @@
 const express = require("express");
 const {
-  getShortUrlAnalytics,getTopicBasedAnalytics
+  getShortUrlAnalytics,
+  getTopicBasedAnalytics,
+  getOverallAnalytics,
 } = require("../controller/analytics.controller.js");
 
 const router = express.Router();
 
-router.get("/analytics/:alias", getShortUrlAnalytics);
-router.get("/analytics/topic/:topic/:alias", getTopicBasedAnalytics);
+router.get("/:alias", getShortUrlAnalytics);
+router.get("/topic/:topic/:alias", getTopicBasedAnalytics);
+router.get("/overall", getOverallAnalytics);
 
 module.exports = router;

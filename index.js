@@ -27,8 +27,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/auth", authRoutes);
-app.use("/api", authenticate, limiter, urlRoutes);
-app.use('/api',authenticate, analyticsRoutes);
+app.use("/api/shorten", authenticate, limiter, urlRoutes);
+app.use("/api/analytics", authenticate, analyticsRoutes);
 const PORT = process.env.PORT;
 let server = async () => {
   try {

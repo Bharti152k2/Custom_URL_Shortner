@@ -14,6 +14,20 @@ const options = {
         url: "https://custom-url-shortner-i74f.onrender.com", // Change this to your deployed URL in production
       },
     ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
   },
   apis: ["./routes/*.js"], // Path to the API routes
 };
