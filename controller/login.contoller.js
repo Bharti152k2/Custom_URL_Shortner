@@ -9,7 +9,9 @@ const generateToken = (user) => {
 };
 
 // Google OAuth Authentication Routes
-const googleAuth = passport.authenticate("google", { scope: ["profile", "email"] });
+const googleAuth = passport.authenticate("google", {
+  scope: ["profile", "email"],
+});
 
 const googleAuthCallback = (req, res) => {
   const token = generateToken(req.user);
