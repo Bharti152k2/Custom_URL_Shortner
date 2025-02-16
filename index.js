@@ -5,6 +5,7 @@ const setupSwagger = require("./swagger");
 const session = require("express-session");
 const authRoutes = require("./routes/login.routes.js");
 const urlRoutes = require("./routes/url.routes.js");
+const analyticsRoutes = require("./routes/analytics.routes.js");
 const passport = require("./passportConfig.js");
 const { authenticate } = require("./middlewares/auth.js");
 const { limiter } = require("./middlewares/rateLimit.js");
@@ -26,17 +27,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/auth", authRoutes);
-app.use(
-  "/api",
-  authenticate,
-  limiter,
-  (req, res, next) => {
-    console.log("Token inside API Route:", req.token); // Log token
-    next();
-  },
-  urlRoutes
-);
-// app.use('/api/analytics', analyticsRoutes);
+app.use("/api", authenticate, limiter, urlRoutes);
+app.use('/api',authenticate, analyticsRoutes);
 const PORT = process.env.PORT;
 let server = async () => {
   try {
