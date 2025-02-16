@@ -11,7 +11,12 @@ const options = {
     },
     servers: [
       {
-        url: "https://custom-url-shortner-i74f.onrender.com", // Change this to your deployed URL in production
+        url: "http://localhost:5001", // Local development server
+        description: "Local server",
+      },
+      {
+        url: "https://custom-url-shortner-i74f.onrender.com", // Deployed server
+        description: "Production server",
       },
     ],
     components: {

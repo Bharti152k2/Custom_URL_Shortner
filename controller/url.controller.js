@@ -1,36 +1,6 @@
 import shortid from "shortid";
 import Url from "../models/url.model.js";
-/**
- * @swagger
- * /api/shorten:
- *   get:
- *     summary: Get overall analytics
- *     description: Retrieve analytics for all short URLs created by the authenticated user.
- *     tags: [Analytics]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Successful response with analytics data.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 totalUrls:
- *                   type: integer
- *                   example: 5
- *                 totalClicks:
- *                   type: integer
- *                   example: 20
- *                 uniqueUsers:
- *                   type: integer
- *                   example: 10
- *       401:
- *         description: Unauthorized - Invalid token.
- *       500:
- *         description: Internal Server Error.
- */
+
 const urlShortener = async (req, res) => {
   try {
     const { longUrl, customAlias, topic } = req.body;
