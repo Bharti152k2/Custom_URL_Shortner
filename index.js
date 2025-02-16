@@ -3,8 +3,11 @@ require("dotenv").config();
 const connectDB = require("./database/connectDB");
 const setupSwagger = require("./swagger");
 const session = require("express-session");
-const routes = require("./routes/login.routes.js");
+const authRoutes = require("./routes/login.routes.js");
+const urlRoutes = require("./routes/url.routes.js");
 const passport = require("./passportConfig.js");
+const { authenticate } = require("./middlewares/auth.js");
+const { limiter } = require("./middlewares/rateLimit.js");
 
 let app = express();
 app.use(express.json());
@@ -22,7 +25,18 @@ app.get("/", (req, res) => {
   res.send("Backend is running successfully!");
 });
 
-app.use("/auth", routes);
+app.use("/auth", authRoutes);
+app.use(
+  "/api",
+  authenticate,
+  limiter,
+  (req, res, next) => {
+    console.log("Token inside API Route:", req.token); // Log token
+    next();
+  },
+  urlRoutes
+);
+// app.use('/api/analytics', analyticsRoutes);
 const PORT = process.env.PORT;
 let server = async () => {
   try {
