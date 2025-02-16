@@ -75,4 +75,66 @@ const getShortUrlAnalytics = async (req, res) => {
   }
 };
 
-export { getShortUrlAnalytics };
+const getTopicBasedAnalytics = async (req, res) => {
+  try {
+
+    // Fetch all URLs under the given topic and created by the logged-in user
+    const urls = await Url.find({
+      topic: req.params.topic,
+      createdBy: req.user.id,
+    });
+
+
+    if (urls.length === 0) {
+      return res.json({
+        totalClicks: 0,
+        uniqueUsers: 0,
+        clicksByDate: [],
+        urls: [],
+      });
+    }
+
+    // 📌 Total Clicks & Unique Users
+    let totalClicks = 0;
+    const uniqueUsersSet = new Set();
+
+    // 📌 Clicks by Date (Last 7 Days)
+    const last7Days = Array.from({ length: 7 }, (_, i) => {
+      const date = moment().subtract(i, "days").format("YYYY-MM-DD");
+      return { date, clickCount: 0 };
+    });
+
+    urls.forEach((url) => {
+      totalClicks += url.clicks.length;
+
+      url.clicks.forEach((click) => {
+        uniqueUsersSet.add(click.ip);
+
+        const clickDate = moment(click.timestamp).format("YYYY-MM-DD");
+        const dateEntry = last7Days.find((entry) => entry.date === clickDate);
+        if (dateEntry) {
+          dateEntry.clickCount += 1;
+        }
+      });
+    });
+
+    // 📌 URLs Breakdown
+    const urlsData = urls.map((url) => ({
+      shortUrl: url.shortUrl,
+      totalClicks: url.clicks.length,
+      uniqueUsers: new Set(url.clicks.map((click) => click.ip)).size,
+    }));
+
+    // ✅ Send response
+    res.json({
+      totalClicks,
+      uniqueUsers: uniqueUsersSet.size,
+      clicksByDate: last7Days,
+      urls: urlsData,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+  }
+};
+
+export { getShortUrlAnalytics, getTopicBasedAnalytics };
